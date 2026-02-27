@@ -3,10 +3,10 @@
 #   type        = string
 # }
 
-# variable "switch_pair_name" {
-#   description = "Logical name for this pair"
-#   type        = string
-# }
+variable "switch_pair_name" {
+  description = "Logical name for this pair"
+  type        = string
+}
 
 # variable "nxos_username" { type = string }
 # variable "nxos_password" { type = string }
