@@ -11,6 +11,32 @@ locals {
   cfg = yamldecode(file("${path.module}/fabric.yaml"))
 }
 
+variable "fabric_cidr"      { type = string }
+variable "switch_pair_name" { type = string }
+variable "nxos_username"    { type = string }
+variable "nxos_password"    { type = string }
+
+variable "switches" {
+  type = object({
+    agg01_url = string
+    agg02_url = string
+  })
+}
+
+variable "subnet_plan" {
+  type = object({
+    loopback_mask_bits = number
+    svi_mask_bits      = number
+    ptp_mask_bits      = number
+    num_loopbacks      = number
+    num_svis           = number
+    num_ptp_links      = number
+  })
+}
+
+# Assign YAML into variables via defaults or a separate locals-to-vars pattern:
+# simplest is to skip variables entirely and feed modules/providers from local.cfg
+
 
 provider "nxos" {
   alias    = "sat01"
