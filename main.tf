@@ -34,3 +34,23 @@ locals {
 #   subnet_plan    = var.subnet_plan
 #   switch_pair_id = var.switch_pair_name
 #}
+
+module "n9k_pair" {
+  source = "./modules/n9k-pair"
+
+  providers = {
+    nxos.sat01 = nxos.sat01
+    nxos.sat02 = nxos.sat02
+  }
+
+  pair_name = var.switch_pair_name
+
+  # consume the derived IPs/subnets
+  loopbacks_sat01 = module.ip_plan.loopbacks_sat01
+  loopbacks_sat02 = module.ip_plan.loopbacks_sat02
+
+  svis_sat01 = module.ip_plan.svis_sat01
+  svis_sat02 = module.ip_plan.svis_sat02
+
+  ptp_links = module.ip_plan.ptp_links
+}
