@@ -6,7 +6,7 @@ nxos_password: "cisco"
 
 switches:
   sat01_url: "https://192.168.1.166"
-  sat02_url: "https://192.168.1.44"
+  sat02_url: "https://192.168.1.144"
 
 subnet_plan:
   loopback_mask_bits: 32
