@@ -37,10 +37,10 @@ module "ip_plan" {
 module "n9k_pair" {
   source = "./modules/n9k-pair"
 
-  providers = {
-    nxos.sat01 = nxos.sat01
-    nxos.sat02 = nxos.sat02
-  }
+#   providers = {
+#     nxos.sat01 = nxos.sat01
+#     nxos.sat02 = nxos.sat02
+#   }
 
   pair_name = var.switch_pair_name
 

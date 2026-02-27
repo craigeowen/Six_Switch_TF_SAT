@@ -1,3 +1,12 @@
+terraform {
+  required_providers {
+    nxos = {
+      source  = "CiscoDevNet/nxos"
+      version = "~> 0.5.10" # example, pin what you actually use
+    }
+  }
+}
+
 # Example: Loopbacks on both switches
 resource "nxos_loopback_interface" "sat01_lo" {
   provider = nxos.sat01
