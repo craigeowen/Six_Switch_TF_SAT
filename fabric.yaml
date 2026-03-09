@@ -4,9 +4,17 @@ switch_pair_name: "sat"
 nxos_username: "cisco"
 nxos_password: "cisco"
 
-switches:
-  sat01_url: "https://192.168.1.166"
-  sat02_url: "https://192.168.1.144"
+devices:
+  sat1:
+    name    : "SAT-01"
+    url     : "https://192.168.1.166"
+    managed : true
+  sat2:    
+    name    : "SAT-02"
+    url     : "https://192.168.1.144"
+    managed : true  
+
+
 
 subnet_plan:
   loopback_mask_bits: 32
