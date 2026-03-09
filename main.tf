@@ -11,6 +11,16 @@ locals {
   cfg = yamldecode(file("./fabric.yaml"))
 }
 
+provider "nxos" {
+  username = "cisco"
+  password = "cisco"
+  devices  = local.devices
+}
+
+resource "nxos_system" "hostname" {
+  for_each     = local.cfg.devices
+  name         = each.value.name
+}
 
 # locals {
 #   devices = [
@@ -28,16 +38,7 @@ locals {
 #   ]
 # }
 
-provider "nxos" {
-  username = "cisco"
-  password = "cisco"
-  devices  = local.devices
-}
 
-resource "nxos_system" "hostname" {
-  for_each     = local.cfg.devices
-  name         = each.value.name
-}
 
 # resource "nxos_system" "hostname" {
 #   for_each    = {for d in local.devices : d.name => d}
