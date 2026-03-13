@@ -1,0 +1,35 @@
+# 1. Define the common settings using an Anchor (&)
+common_settings: &common
+  vrf2_name: "VRF3"
+  vrf2_description: "My VRF3 Description"
+  managed: true
+  username: cisco
+  password: cisco
+  provide_url_sat01: "https://192.168.1.166"
+  provide_url_sat02: "https://192.168.1.144"
+  vlans:
+    "30":
+      fabric_encap: 30
+      name: "TEST-VLAN-30"
+    "40":
+      fabric_encap: 40
+      name: "TEST-VLAN-40"
+
+
+# 2. Reference the common settings using an Alias (*)
+twe-sat01:
+  <<: *common                # This "pulls in" everything from common_settings
+  name: "twe-sat01"
+  url: "https://192.168.1.166"
+
+twe-sat02:
+  <<: *common                # Same here
+  name: "twe-sat02"
+  url: "https://192.168.1.144"
+
+# 3. You can also override specific values
+# twe-sat03:
+#   <<: *common
+#   name: "twe-sat03"
+#   url: "https://192.168.1.155"
+#   vrf2_name: "SPECIAL_VRF"   # This overrides the common "VRF2" value

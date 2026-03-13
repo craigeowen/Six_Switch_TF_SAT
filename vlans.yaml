@@ -1,0 +1,7 @@
+vlans:
+  "30":
+    fabric_encap: 30
+    name: "TEST-VLAN-30"
+  "40":
+    fabric_encap: 40
+    name: "TEST-VLAN-40"
