@@ -59,12 +59,13 @@ resource "nxos_bridge_domain" "vlan-common" {
   name         = "${each.value.name}"
 }
 
-data "nxos_bridge_domain" "vlans" {
+##### OUTPUT Module - will be used to return output to Root #####
+data "nxos_bridge_domain" "vlans_module" {
   for_each = local.device_vlans
   device = each.value.device
   fabric_encap        = "vlan-${each.value.fabric_encap}"
 }
 
-output "vlans" {
-  value = data.nxos_bridge_domain.vlans
+output "vlans_module" {
+  value = data.nxos_bridge_domain.vlans_module
 }

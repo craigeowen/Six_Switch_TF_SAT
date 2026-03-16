@@ -95,6 +95,12 @@ resource "nxos_system" "hostname" {
   name   = each.value.name
   # Sets the hostname ('name') based on the 'name' attribute of the current device in the loop
 }
+##### Each block is composed of
+##### A Resource Block
+##### A data block
+##### An output block whcih hold theb output
+
+##### VRF Config
 
 resource "nxos_vrf" "vrf" {
   for_each = local.device_vrfs
@@ -113,6 +119,10 @@ output "vrfs" {
   value = data.nxos_vrf.vrf
 } 
 
+##### End of VRF Config
+
+### Vlan config
+
 resource "nxos_bridge_domain" "vlan-common" {
   for_each = local.device_vlans
   device = each.value.device
@@ -128,6 +138,13 @@ data "nxos_bridge_domain" "vlans" {
 
 output "vlans" {
   value = data.nxos_bridge_domain.vlans
+}
+
+##### End of VLAN Config 
+
+##### This is usewd for returned OUTPUT from Modules #####
+output "vlans_module" {
+  value = module.config-common-vlans.vlans_module
 }
 
 resource "nxos_save_config" "save-config" {
