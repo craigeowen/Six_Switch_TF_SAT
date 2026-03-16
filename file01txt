@@ -1,0 +1,46 @@
+vlans = {
+  "twe-sat01.10" = {
+    "access_encap" = "unknown"
+    "device" = "twe-sat01"
+    "fabric_encap" = "vlan-10"
+    "id" = "sys/bd/bd-[vlan-10]"
+    "name" = "TEST-VLAN-10"
+  }
+  "twe-sat01.20" = {
+    "access_encap" = "unknown"
+    "device" = "twe-sat01"
+    "fabric_encap" = "vlan-20"
+    "id" = "sys/bd/bd-[vlan-20]"
+    "name" = "TEST-VLAN-20"
+  }
+  "twe-sat02.10" = {
+    "access_encap" = "unknown"
+    "device" = "twe-sat02"
+    "fabric_encap" = "vlan-10"
+    "id" = "sys/bd/bd-[vlan-10]"
+    "name" = "TEST-VLAN-10"
+  }
+  "twe-sat02.20" = {
+    "access_encap" = "unknown"
+    "device" = "twe-sat02"
+    "fabric_encap" = "vlan-20"
+    "id" = "sys/bd/bd-[vlan-20]"
+    "name" = "TEST-VLAN-20"
+  }
+}
+vrfs = {
+  "twe-sat01.xx01-es-core" = {
+    "description" = "VRF for ES Core"
+    "device" = "twe-sat01"
+    "encap" = "unknown"
+    "id" = "sys/inst-[xx01-es-core]"
+    "name" = "xx01-es-core"
+  }
+  "twe-sat02.xx01-es-core" = {
+    "description" = "VRF for ES Core"
+    "device" = "twe-sat02"
+    "encap" = "unknown"
+    "id" = "sys/inst-[xx01-es-core]"
+    "name" = "xx01-es-core"
+  }
+}
