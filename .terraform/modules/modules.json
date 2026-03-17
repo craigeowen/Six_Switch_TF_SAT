@@ -1,1 +1,1 @@
-{"Modules":[{"Key":"","Source":"","Dir":"."},{"Key":"config-common-vlans","Source":"./modules/vlans","Dir":"modules/vlans"}]}
+{"Modules":[{"Key":"","Source":"","Dir":"."},{"Key":"config-Eth-Ints","Source":"./modules/Eth_Int","Dir":"modules/Eth_Int"},{"Key":"config-common-vlans","Source":"./modules/vlans","Dir":"modules/vlans"}]}

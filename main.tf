@@ -147,6 +147,12 @@ output "vlans_module" {
   value = module.config-common-vlans.vlans_module
 }
 
+output "Eth_Int_module" {
+  value = module.config-Eth-Ints.l2_eth_interface
+}
+
+##### SAVE RUNNING CONFIG TO STARTUP CONFIG #####
+
 resource "nxos_save_config" "save-config" {
   for_each = local.device_data
   device = each.key
@@ -155,12 +161,18 @@ resource "nxos_save_config" "save-config" {
 
 
 
-##### Configure  VLANs #####
+##### Configure  modules #####
+
+### Vlans
 module "config-common-vlans" {
   source = "./modules/vlans"
   #common_vlan = local.device_vlans
 }
 
+### Eth Int
+module "config-Eth-Ints" {
+  source = "./modules/Eth_Int"
+}
 
 
 

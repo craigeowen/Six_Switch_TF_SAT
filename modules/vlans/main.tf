@@ -36,13 +36,23 @@ locals {
       for vlan_id, vlan_val in local.raw_yaml.common_settings.vlans :
       "${device_key}.${vlan_id}" => {
         device       = device_key
-        vlan_id      = vlan_id
-        name         = vlan_val.name
-        fabric_encap = vlan_val.fabric_encap
+        vlan_id      = try(vlan_id, "enabled") # This is a workaround to handle the case where vlan_id might not be present in the YAML")
+        name         = try(vlan_val.name, "DEFAULT")
+        fabric_encap = try(vlan_val.fabric_encap, 999)
+        #bfd_admin_state = try(local.raw_yaml.common_settings.features.bfd.admin_state, "disabled")
       }
     }
   ]...) # The '...' is important to merge the list of maps into one map
 
+  device_feature = merge([
+    for device_key, device_val in local.device_data: {
+      for df_id, df_val in local.raw_yaml.common_settings.features :
+      "${device_key}.${df_id}" => {
+        device       = device_key
+        admin_state = try(df_val.admin_state, "disabled")
+      }
+    }
+  ]...)
 
 }
 
@@ -57,6 +67,12 @@ resource "nxos_bridge_domain" "vlan-common" {
   device = each.value.device
   fabric_encap = "vlan-${each.value.fabric_encap}"
   name         = "${each.value.name}"
+}
+
+resource "nxos_feature_bfd" "bfd" {
+  for_each = local.device_feature
+  device = each.value.device
+  admin_state = each.value.admin_state
 }
 
 ##### OUTPUT Module - will be used to return output to Root #####
