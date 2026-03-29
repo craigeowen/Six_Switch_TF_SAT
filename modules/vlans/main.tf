@@ -2,7 +2,7 @@ terraform {
   required_providers {
     nxos = {
       source  = "CiscoDevNet/nxos"
-      version = "~> 0.7.0" # example, pin what you actually use
+      version = ">= 0.8.0" # example, pin what you actually use
     }
   }
 }
@@ -13,11 +13,13 @@ locals {
       name = "twe-sat01"
       url  = "https://192.168.1.166"
       number = 1
+      alias = "twe-sat01"
     },
     {
       name = "twe-sat02"
       url  = "https://192.168.1.144"
       number = 2
+      alias = "twe-sat02"
     },
   ]
   raw_yaml = yamldecode(file("${path.root}/common.yaml"))
@@ -44,16 +46,7 @@ locals {
     }
   ]...) # The '...' is important to merge the list of maps into one map
 
-  device_feature = merge([
-    for device_key, device_val in local.device_data: {
-      for df_id, df_val in local.raw_yaml.common_settings.features :
-      "${device_key}.${df_id}" => {
-        device       = device_key
-        admin_state = try(df_val.admin_state, "disabled")
-      }
-    }
-  ]...)
-
+  
 }
 
 provider "nxos" {
@@ -62,26 +55,101 @@ provider "nxos" {
   devices  = concat(local.leafs)
 }
 
-resource "nxos_bridge_domain" "vlan-common" {
-  for_each = local.device_vlans
-  device = each.value.device
-  fabric_encap = "vlan-${each.value.fabric_encap}"
-  name         = "${each.value.name}"
+##### VRF Config
+
+##### Add the vlan using the provider. Note I do not see how to add a vlan name?
+##### Adding each vlan seperatley as unsure how to loop through the map of vlan in the vlans.yaml file. This is a workaround to get the VRF created and then we can add the interfaces to it in the Eth_Int module.
+
+resource "nxos_bridge_domain" "bd-vlan3010" {
+  for_each = local.device_data
+  device = each.key 
+  #svi_autostate = "disable"
+  bridge_domains = {
+    "vlan-3010" = {
+      #access_encap        = "unknown"
+      name                = "vlan-3010"
+      #bridge_domain_state = "suspend"
+      #admin_state         = "active"
+      #bridge_mode         = "mac"
+      #control             = "untagged"
+      #forwarding_control  = "mdst-flood"
+      #forwarding_mode     = "bridge"
+      #long_name           = false
+      #mac_packet_classify = "enable"
+      #mode                = "CE"
+      #vrf_name            = "default"
+      #cross_connect       = "disable"
+    }
+  }
 }
 
-resource "nxos_feature_bfd" "bfd" {
-  for_each = local.device_feature
-  device = each.value.device
-  admin_state = each.value.admin_state
+resource "nxos_bridge_domain" "bd-vlan3020" {
+  for_each = local.device_data
+  device = each.key 
+  #svi_autostate = "disable"
+  bridge_domains = {
+    "vlan-3020" = {
+      #access_encap        = "unknown"
+      name                = "vlan-3020"
+      #bridge_domain_state = "suspend"
+      #admin_state         = "active"
+      #bridge_mode         = "mac"
+      #control             = "untagged"
+      #forwarding_control  = "mdst-flood"
+      #forwarding_mode     = "bridge"
+      #long_name           = false
+      #mac_packet_classify = "enable"
+      #mode                = "CE"
+      #vrf_name            = "default"
+      #cross_connect       = "disable"
+    }
+  }
+}
+
+resource "nxos_bridge_domain" "bd-vlan3030" {
+  for_each = local.device_data
+  device = each.key 
+  #svi_autostate = "disable"
+  bridge_domains = {
+    "vlan-3030" = {
+      #access_encap        = "unknown"
+      name                = "vlan-3030"
+      #bridge_domain_state = "suspend"
+      #admin_state         = "active"
+      #bridge_mode         = "mac"
+      #control             = "untagged"
+      #forwarding_control  = "mdst-flood"
+      #forwarding_mode     = "bridge"
+      #long_name           = false
+      #mac_packet_classify = "enable"
+      #mode                = "CE"
+      #vrf_name            = "default"
+      #cross_connect       = "disable"
+    }
+  }
+}
+
+resource "nxos_bridge_domain" "bd-vlan3060" {
+  for_each = local.device_data
+  device = each.key 
+  #svi_autostate = "disable"
+  bridge_domains = {
+    "vlan-3060" = {
+      #access_encap        = "unknown"
+      name                = "vlan-3060"
+      #bridge_domain_state = "suspend"
+      #admin_state         = "active"
+      #bridge_mode         = "mac"
+      #control             = "untagged"
+      #forwarding_control  = "mdst-flood"
+      #forwarding_mode     = "bridge"
+      #long_name           = false
+      #mac_packet_classify = "enable"
+      #mode                = "CE"
+      #vrf_name            = "default"
+      #cross_connect       = "disable"
+    }
+  }
 }
 
 ##### OUTPUT Module - will be used to return output to Root #####
-data "nxos_bridge_domain" "vlans_module" {
-  for_each = local.device_vlans
-  device = each.value.device
-  fabric_encap        = "vlan-${each.value.fabric_encap}"
-}
-
-output "vlans_module" {
-  value = data.nxos_bridge_domain.vlans_module
-}

@@ -1,1 +1,1 @@
-{"Modules":[{"Key":"","Source":"","Dir":"."},{"Key":"config-Eth-Ints","Source":"./modules/Eth_Int","Dir":"modules/Eth_Int"},{"Key":"config-common-vlans","Source":"./modules/vlans","Dir":"modules/vlans"}]}
+{"Modules":[{"Key":"","Source":"","Dir":"."},{"Key":"config-VPC","Source":"./modules/vpc","Dir":"modules/vpc"},{"Key":"config-common-vlans","Source":"./modules/vlans","Dir":"modules/vlans"},{"Key":"config-interfaces","Source":"./modules/interfaces","Dir":"modules/interfaces"},{"Key":"config-ipv4-addresses","Source":"./modules/ipv4address","Dir":"modules/ipv4address"}]}

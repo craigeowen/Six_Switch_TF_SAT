@@ -2,7 +2,7 @@ terraform {
   required_providers {
     nxos = {
       source  = "CiscoDevNet/nxos"
-      version = "~> 0.7.0" # example, pin what you actually use
+      version = ">= 0.8.0" # example, pin what you actually use
     }
   }
 }
@@ -13,11 +13,13 @@ locals {
       name = "twe-sat01"
       url  = "https://192.168.1.166"
       number = 1
+      alias = "twe-sat01"
     },
     {
       name = "twe-sat02"
       url  = "https://192.168.1.144"
       number = 2
+      alias = "twe-sat02"
     },
   ]
   raw_yaml = yamldecode(file("./base.yaml"))
@@ -32,20 +34,20 @@ locals {
 # 1. Extract the common settings into a single object
   common = local.raw_yaml["common_settings"]
 
-    common_data = { 
+  common_data = { 
     for k, v in local.raw_yaml : k => v 
     if k == "common_settings" 
   }
 
-# 2. Flatten: Create a map entry for every VLAN on every device
-  device_vlans = merge([
+# 2. Flatten: Create a map entry for every FEATURE on every device
+  device_features = merge([
     for device_key, device_val in local.device_data: {
-      for vlan_id, vlan_val in local.raw_yaml.common_settings.vlans :
-      "${device_key}.${vlan_id}" => {
+      for feature_id, feature_val in local.raw_yaml.common_settings.features :
+      "${device_key}.${feature_id}" => {
         device       = device_key
-        vlan_id      = vlan_id
-        name         = vlan_val.name
-        fabric_encap = vlan_val.fabric_encap
+        feature_id   = feature_id
+        admin_state  = feature_val.admin_state
+
       }
     }
   ]...) # The '...' is important to merge the list of maps into one map
@@ -98,58 +100,106 @@ resource "nxos_system" "hostname" {
 ##### Each block is composed of
 ##### A Resource Block
 ##### A data block
-##### An output block whcih hold theb output
+##### An output block whcih hold the output
 
 ##### VRF Config
 
-resource "nxos_vrf" "vrf" {
-  for_each = local.device_vrfs
-  device = each.value.device
-  name        = "${each.value.name}"
-  description = "${each.value.description}"
+##### Add the vrf using the rest apiu as provider method does not work!
+##### Adding each vrf seperatley as unsure how to loop through the map of vrfs in the common.yaml file. This is a workaround to get the VRF created and then we can add the interfaces to it in the Eth_Int module.
+resource "nxos_dme" "l3Inst-xx01" {
+  for_each = local.device_data
+  device = each.key  
+  dn         = "sys/inst-[xx01-xx-core]"
+  class_name = "l3Inst"
+  content = {
+    name  = "xx01-xx-core"
+    descr = "VRF for xx01-xx-core"
+  }
+}
+resource "nxos_dme" "l3Inst-xx02" {
+  for_each = local.device_data
+  device = each.key  
+  dn         = "sys/inst-[xx02-xx-core]"
+  class_name = "l3Inst"
+  content = {
+    name  = "xx02-xx-core"
+    descr = "VRF for xx02-xx-core"
+  }
+}
+resource "nxos_dme" "l3Inst-xx03" {
+  for_each = local.device_data
+  device = each.key  
+  dn         = "sys/inst-[xx03-xx-core]"
+  class_name = "l3Inst"
+  content = {
+    name  = "xx03-xx-core"
+    descr = "VRF for xx03-xx-core"
+  }
+}
+resource "nxos_dme" "l3Inst-xx06" {
+  for_each = local.device_data
+  device = each.key  
+  dn         = "sys/inst-[xx06-xx-core]"
+  class_name = "l3Inst"
+  content = {
+    name  = "xx06-xx-core"
+    descr = "VRF for xx06-xx-core"
+  }
+}
+resource "nxos_dme" "l3Inst-vpc" {
+  for_each = local.device_data
+  device = each.key  
+  dn         = "sys/inst-[vpc]"
+  class_name = "l3Inst"
+  content = {
+    name  = "vpc"
+    descr = "VRF for vpc"
+  }
 }
 
-data "nxos_vrf" "vrf" {
-  for_each = local.device_vrfs
-  device = each.value.device
-  name        = "${each.value.name}"
-}
-
-output "vrfs" {
-  value = data.nxos_vrf.vrf
-} 
 
 ##### End of VRF Config
 
-### Vlan config
+##### Feature Config
 
-resource "nxos_bridge_domain" "vlan-common" {
-  for_each = local.device_vlans
+resource "nxos_feature" "example" {
+  for_each = local.device_features
   device = each.value.device
-  fabric_encap = "vlan-${each.value.fabric_encap}"
-  name         = "${each.value.name}"
+  #name        = "${each.value.name}"
+ # bash_shell     = "${each.value.admin_state}"
+  bfd            = "${each.value.admin_state}"
+  bgp            = "${each.value.admin_state}"
+  #dhcp           = "${each.value.admin_state}"
+  #evpn           = "${each.value.admin_state}"
+  #hmm            = "${each.value.admin_state}"
+  #hsrp           = "${each.value.admin_state}"
+  interface_vlan = "${each.value.admin_state}"
+  #isis           = "${each.value.admin_state}"
+  lacp           = "${each.value.admin_state}"
+  #lldp           = "${each.value.admin_state}"
+  #macsec         = "${each.value.admin_state}"
+  #netflow        = "${each.value.admin_state}"
+  #ngmvpn         = "${each.value.admin_state}"
+  #ngoam          = "${each.value.admin_state}"
+  #nv_overlay     = "${each.value.admin_state}"
+  #ospf           = "${each.value.admin_state}"
+  #ospfv3         = "${each.value.admin_state}"
+  #pim            = "${each.value.admin_state}"
+  #ptp            = "${each.value.admin_state}"
+  #pvlan          = "${each.value.admin_state}"
+  #sflow          = "${each.value.admin_state}"
+  #ssh            = "${each.value.admin_state}"
+  #tacacs         = "${each.value.admin_state}"
+  #telnet         = "${each.value.admin_state}"
+  #udld           = "${each.value.admin_state}"
+  #vn_segment     = "${each.value.admin_state}"
+  vpc            = "${each.value.admin_state}"
 }
 
-data "nxos_bridge_domain" "vlans" {
-  for_each = local.device_vlans
-  device = each.value.device
-  fabric_encap        = "vlan-${each.value.fabric_encap}"
-}
-
-output "vlans" {
-  value = data.nxos_bridge_domain.vlans
-}
-
-##### End of VLAN Config 
+##### End of Features Config
 
 ##### This is usewd for returned OUTPUT from Modules #####
-output "vlans_module" {
-  value = module.config-common-vlans.vlans_module
-}
 
-output "Eth_Int_module" {
-  value = module.config-Eth-Ints.l2_eth_interface
-}
 
 ##### SAVE RUNNING CONFIG TO STARTUP CONFIG #####
 
@@ -169,10 +219,26 @@ module "config-common-vlans" {
   #common_vlan = local.device_vlans
 }
 
-### Eth Int
-module "config-Eth-Ints" {
-  source = "./modules/Eth_Int"
+# ### Eth Int
+# module "config-Eth-Ints" {
+#   source = "./modules/Eth_Int"
+# }
+
+### VPC
+module "config-VPC" {
+  source = "./modules/vpc"
 }
+
+
+ ### Eth Int
+ module "config-interfaces" {
+   source = "./modules/interfaces"
+ }
+
+ ### IPV4
+ module "config-ipv4-addresses" {
+   source = "./modules/ipv4address"
+ }
 
 
 

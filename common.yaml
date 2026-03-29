@@ -14,10 +14,16 @@ common_settings: &common
     "60":
       fabric_encap: 60
       name: "TEST-VLAN-60"
+    "70":
+      fabric_encap: 70
+      name: "TEST-VLAN-70"
 
   features:
     "bfd":
       admin_state: "enabled" #states are enabled or disabled
+    "vpc":
+      admin_state: "enabled" #states are enabled or disabled
+
 
 #######################################################################
 ##### The below config applies the variables above to the switches#####
@@ -31,9 +37,6 @@ twe-sat01:
   <<: *common                # This "pulls in" everything from common_settings
   name: "twe-sat01"
   url: "https://192.168.1.166"
-  features:
-     "macsec":
-       admin_state: "enabled" #states are enable or disabled
 
 twe-sat02:
   <<: *common                # Same here

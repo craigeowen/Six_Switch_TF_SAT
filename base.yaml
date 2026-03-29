@@ -7,23 +7,37 @@ common_settings: &common
   provide_url_sat02: "https://192.168.1.144"
   
   ##### VRF's#####
-  #vrf2_name: "VRF3"
-  #vrf2_description: "My VRF3 Description"
+
   vrfs:
-    "xx01-es-core":
-      name: "xx01-es-core"
-      description: "VRF for ES Core"
+    "xx01-yy-core":
+      name: "xx01-yy-core"
+      description: "VRF for yy Core"
+    "xx02-yy-core":
+      name: "xx02-yy-core"
+      description: "VRF for yy Core"   
+    "xx03-yy-core":
+      name: "xx03-yy-core"
+      description: "VRF for yy Core" 
+    "xx06-yy-core":
+      name: "xx06-yy-core"
+      description: "VRF for yy Core" 
+    "vpc":
+      name: "vpc"
+      description: "VRF for vpc" 
   ##### End of VRFs #####
 
-  ##### VLANs's#####
-  vlans:
-    "10":
-      fabric_encap: 10
-      name: "TEST-VLAN-10"
-    "20":
-      fabric_encap: 20
-      name: "TEST-VLAN-20"
-  #####End of VLANS #####
+  features:
+#states are enabled or disabled
+    "bfd":
+      admin_state: "enabled" 
+    "bgp":
+      admin_state: "enabled" 
+    "interface_vlan":
+      admin_state: "enabled" 
+    "lacp":
+      admin_state: "enabled"
+    "vpc":
+      admin_state: "enabled" 
 
 
 
