@@ -80,76 +80,25 @@ resource "nxos_bridge_domain" "bd-vlan3010" {
       #vrf_name            = "default"
       #cross_connect       = "disable"
     }
-  }
-}
-
-resource "nxos_bridge_domain" "bd-vlan3020" {
-  for_each = local.device_data
-  device = each.key 
-  #svi_autostate = "disable"
-  bridge_domains = {
     "vlan-3020" = {
-      #access_encap        = "unknown"
       name                = "vlan-3020"
-      #bridge_domain_state = "suspend"
-      #admin_state         = "active"
-      #bridge_mode         = "mac"
-      #control             = "untagged"
-      #forwarding_control  = "mdst-flood"
-      #forwarding_mode     = "bridge"
-      #long_name           = false
-      #mac_packet_classify = "enable"
-      #mode                = "CE"
-      #vrf_name            = "default"
-      #cross_connect       = "disable"
     }
-  }
-}
-
-resource "nxos_bridge_domain" "bd-vlan3030" {
-  for_each = local.device_data
-  device = each.key 
-  #svi_autostate = "disable"
-  bridge_domains = {
     "vlan-3030" = {
-      #access_encap        = "unknown"
       name                = "vlan-3030"
-      #bridge_domain_state = "suspend"
-      #admin_state         = "active"
-      #bridge_mode         = "mac"
-      #control             = "untagged"
-      #forwarding_control  = "mdst-flood"
-      #forwarding_mode     = "bridge"
-      #long_name           = false
-      #mac_packet_classify = "enable"
-      #mode                = "CE"
-      #vrf_name            = "default"
-      #cross_connect       = "disable"
     }
+    "vlan-3060" = {
+      name                = "vlan-3060"
+    }
+    "vlan-650" = {
+      name                = "vlan-650"
+    }
+    "vlan-651" = {
+      name                = "vlan-651"
+    }
+
   }
 }
 
-resource "nxos_bridge_domain" "bd-vlan3060" {
-  for_each = local.device_data
-  device = each.key 
-  #svi_autostate = "disable"
-  bridge_domains = {
-    "vlan-3060" = {
-      #access_encap        = "unknown"
-      name                = "vlan-3060"
-      #bridge_domain_state = "suspend"
-      #admin_state         = "active"
-      #bridge_mode         = "mac"
-      #control             = "untagged"
-      #forwarding_control  = "mdst-flood"
-      #forwarding_mode     = "bridge"
-      #long_name           = false
-      #mac_packet_classify = "enable"
-      #mode                = "CE"
-      #vrf_name            = "default"
-      #cross_connect       = "disable"
-    }
-  }
-}
+
 
 ##### OUTPUT Module - will be used to return output to Root #####

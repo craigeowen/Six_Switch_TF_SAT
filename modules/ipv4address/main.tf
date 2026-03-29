@@ -31,6 +31,8 @@ locals {
   }
 
   loopback_octet = "10.66.127"
+  xx01-xx-core_octet = "10.66.125"
+  prod_xx_octet = "10.66.32"
 
 # 2. Flatten: Create a map entry for every VLAN on every device
   # device_config = merge([
@@ -112,52 +114,15 @@ resource "nxos_ipv4" "sat01" {
   # admin_state                             = "enabled"
   # instance_admin_state                    = "enabled"
   # access_list_match_local                 = "enabled"
-  # control                                 = "stateful-ha"
-  # hardware_ecmp_hash_offset_concatenation = "enabled"
-  # hardware_ecmp_hash_offset_value         = 10
-  # hardware_ecmp_hash_polynomial           = "CRC32HI"
-  # logging_level                           = "warning"
-  # redirect_syslog                         = "disabled"
-  # redirect_syslog_interval                = 120
-  # source_route                            = "disabled"
   vrfs = {
      "vpc" = {
-    #   auto_discard                 = "enabled"
-    #   icmp_errors_source_interface = "unspecified"
-    #   static_routes = {
-    #     "1.1.1.0/24" = {
-    #       control     = "bfd"
-    #       description = "My Description"
-    #       preference  = 2
-    #       tag         = 10
-    #       next_hops = {
-    #         "unspecified;1.2.3.4;default" = {
-    #           description           = "My Description"
-    #           object                = 10
-    #           preference            = 123
-    #           tag                   = 10
-    #           name                  = "nh1"
-    #           rewrite_encapsulation = "unknown"
-    #         }
-    #       }
-    #     }
-    #   }
+
       interfaces = {
         "po4" = {
-          # drop_glean             = "disabled"
-          # forward                = "disabled"
-          # unnumbered             = "unspecified"
-          # urpf                   = "disabled"
-          # directed_broadcast_acl = "ACL1"
-          # directed_broadcast     = "enabled"
+
           addresses = {
             "1.1.1.1/30" = {
-            #   type       = "primary"
-            #   tag        = 1234
-            #   control    = "pervasive"
-            #   preference = 1
-            #   use_bia    = "enabled"
-            #   vpc_peer   = "10.0.0.1/30"
+
             }
           }
         }
@@ -166,125 +131,170 @@ resource "nxos_ipv4" "sat01" {
   "xx01-xx-core" = {
     #   auto_discard                 = "enabled"
     #   icmp_errors_source_interface = "unspecified"
-    #   static_routes = {
-    #     "1.1.1.0/24" = {
+       static_routes = {
+         "${local.loopback_octet}.6/32" = {
     #       control     = "bfd"
-    #       description = "My Description"
+           description = "SR_TO_SAT02_LOOPBACK"
     #       preference  = 2
     #       tag         = 10
-    #       next_hops = {
-    #         "unspecified;1.2.3.4;default" = {
+           next_hops = {
+             "po2.3010;${local.xx01-xx-core_octet}.21;xx01-xx-core" = {
     #           description           = "My Description"
     #           object                = 10
     #           preference            = 123
     #           tag                   = 10
     #           name                  = "nh1"
     #           rewrite_encapsulation = "unknown"
-    #         }
-    #       }
-    #     }
-    #   }
+             }
+           }
+         }
+       }
       interfaces = {
         "lo101" = {
-          # drop_glean             = "disabled"
-          # forward                = "disabled"
-          # unnumbered             = "unspecified"
-          # urpf                   = "disabled"
-          # directed_broadcast_acl = "ACL1"
-          # directed_broadcast     = "enabled"
+
           addresses = {
-            "${local.loopback_octet}.1/30" = {
-            #   type       = "primary"
-            #   tag        = 1234
-            #   control    = "pervasive"
-            #   preference = 1
-            #   use_bia    = "enabled"
-            #   vpc_peer   = "10.0.0.1/30"
+            "${local.loopback_octet}.5/32" = {
+
             }
           }
         }
-        #"po4" = {
-          # drop_glean             = "disabled"
-          # forward                = "disabled"
-          # unnumbered             = "unspecified"
-          # urpf                   = "disabled"
-          # directed_broadcast_acl = "ACL1"
-          # directed_broadcast     = "enabled"
-          #addresses = {
-            #"1.1.1.1/30" = {
-            #   type       = "primary"
-            #   tag        = 1234
-            #   control    = "pervasive"
-            #   preference = 1
-            #   use_bia    = "enabled"
-            #   vpc_peer   = "10.0.0.1/30"
-            #}
-          #}
-        #}
+        "po2.3010" = {
+
+          addresses = {
+            "${local.xx01-xx-core_octet}.20/31" = {
+
+            }
+          }
+        }
+        "po11.3010" = {
+
+          addresses = {
+            "${local.xx01-xx-core_octet}.13/31" = {
+
+            }
+          }
+        }
+        "po21.3010" = {
+
+          addresses = {
+            "${local.xx01-xx-core_octet}.17/31" = {
+
+            }
+          }
+        }
+        "vlan650" = {
+
+          addresses = {
+            "${local.prod_xx_octet}.30/27" = {
+
+            }
+          }
+        }
+        "vlan651" = {
+
+          addresses = {
+            "${local.prod_xx_octet}.62/27" = {
+
+            }
+          }  
+        }
       }
     }
   }
 }
+
 
 
 resource "nxos_ipv4" "sat02" {
-  provider = nxos.twe-sat02  
+  provider = nxos.twe-sat02 
   # admin_state                             = "enabled"
   # instance_admin_state                    = "enabled"
   # access_list_match_local                 = "enabled"
-  # control                                 = "stateful-ha"
-  # hardware_ecmp_hash_offset_concatenation = "enabled"
-  # hardware_ecmp_hash_offset_value         = 10
-  # hardware_ecmp_hash_polynomial           = "CRC32HI"
-  # logging_level                           = "warning"
-  # redirect_syslog                         = "disabled"
-  # redirect_syslog_interval                = 120
-  # source_route                            = "disabled"
   vrfs = {
      "vpc" = {
+
+      interfaces = {
+        "po4" = {
+
+          addresses = {
+            "1.1.1.2/30" = {
+
+            }
+          }
+        }
+      }
+    }
+  "xx01-xx-core" = {
     #   auto_discard                 = "enabled"
     #   icmp_errors_source_interface = "unspecified"
-    #   static_routes = {
-    #     "1.1.1.0/24" = {
+       static_routes = {
+         "${local.loopback_octet}.5/32" = {
     #       control     = "bfd"
-    #       description = "My Description"
+           description = "SR_TO_SAT01_LOOPBACK"
     #       preference  = 2
     #       tag         = 10
-    #       next_hops = {
-    #         "unspecified;1.2.3.4;default" = {
+           next_hops = {
+             "po2.3010;${local.xx01-xx-core_octet}.20;xx01-xx-core" = {
     #           description           = "My Description"
     #           object                = 10
     #           preference            = 123
     #           tag                   = 10
     #           name                  = "nh1"
     #           rewrite_encapsulation = "unknown"
-    #         }
-    #       }
-    #     }
-    #   }
+             }
+           }
+         }
+       }
       interfaces = {
-        "po4" = {
-          # drop_glean             = "disabled"
-          # forward                = "disabled"
-          # unnumbered             = "unspecified"
-          # urpf                   = "disabled"
-          # directed_broadcast_acl = "ACL1"
-          # directed_broadcast     = "enabled"
+        "lo101" = {
+
           addresses = {
-            "1.1.1.2/30" = {
-            #   type       = "primary"
-            #   tag        = 1234
-            #   control    = "pervasive"
-            #   preference = 1
-            #   use_bia    = "enabled"
-            #   vpc_peer   = "10.0.0.1/30"
+            "${local.loopback_octet}.6/32" = {
+
             }
           }
         }
+        "po2.3010" = {
+
+          addresses = {
+            "${local.xx01-xx-core_octet}.21/31" = {
+
+            }
+          }
+        }
+        "po12.3010" = {
+
+          addresses = {
+            "${local.xx01-xx-core_octet}.15/31" = {
+
+            }
+          }
+        }
+        "po22.3010" = {
+
+          addresses = {
+            "${local.xx01-xx-core_octet}.19/31" = {
+
+            }
+          }
+        }
+        "vlan650" = {
+
+          addresses = {
+            "${local.prod_xx_octet}.29/27" = {
+
+            }
+          }
+        }
+        "vlan651" = {
+
+          addresses = {
+            "${local.prod_xx_octet}.61/27" = {
+
+            }
+          }  
+        }
       }
     }
-    
   }
 }
-
-

@@ -105,17 +105,53 @@ provider "nxos" {
 
 ##### Physical Interfaces #####
 
+### Required to bring up PO1 physical interfaces as they are part of the vPC keepalive configuration. The port-channel interface will not come up without the physical interface being up and in the correct state. This is a workaround to ensure the PO4 interfaces come up and we can then remove this code and manage the physical interfaces in a seperate module if desired.
+resource "nxos_physical_interface" "eth1_5_6" {
+  for_each = local.device_data
+  device = each.key 
+  physical_interfaces = {
+        "eth1/5" = {
+        admin_state                        = "up"
+        description                        = "PO1_Member"
+        }
+        "eth1/6" = {
+        admin_state                        = "up"
+        description                        = "PO1_Member"
+        }
+  }
+}
+
+### Required to bring up PO2 physical interfaces as they are part of the vPC keepalive configuration. The port-channel interface will not come up without the physical interface being up and in the correct state. This is a workaround to ensure the PO4 interfaces come up and we can then remove this code and manage the physical interfaces in a seperate module if desired.
+resource "nxos_physical_interface" "eth1_9_11" {
+  for_each = local.device_data
+  device = each.key
+  physical_interfaces = {
+    "eth1/9" = {
+      admin_state                        = "up"
+      description                        = "PO2_Member"
+    }
+    "eth1/11" = {
+      admin_state                        = "up"
+      description                        = "PO2_Member"
+    }
+  }
+}
+
 ### Required to bring up PO4 physical interfaces as they are part of the vPC keepalive configuration. The port-channel interface will not come up without the physical interface being up and in the correct state. This is a workaround to ensure the PO4 interfaces come up and we can then remove this code and manage the physical interfaces in a seperate module if desired.
 resource "nxos_physical_interface" "eth1_4" {
   for_each = local.device_data
   device = each.key 
   physical_interfaces = {
-    "eth1/4" = {
-      admin_state                        = "up"
-      description                        = "PO4_Member"
-    }
+        "eth1/4" = {
+        admin_state                        = "up"
+        description                        = "PO4_Member"
+        }
+        
   }
 }
+
+
+
 # resource "nxos_physical_interface" "eth1_6" {
 #   for_each = local.device_data
 #   device = each.key 
@@ -134,6 +170,114 @@ resource "nxos_physical_interface" "eth1_4" {
 ##### Physical Interfaces #####
 
 ##### Port-Channel Interfaces #####
+
+resource "nxos_port_channel_interface" "po" {
+  provider = nxos.twe-sat01
+  #for_each = local.device_data
+  #device = each.key 
+  port_channel_interfaces = {
+    "po101" = {
+      port_channel_mode      = "active"
+      minimum_links          = 1
+      suspend_individual     = "disable"
+      admin_state            = "up"
+      description            = "### TWE SAT to PROD HRB Proxy 1 ###"
+      layer                  = "Layer2"
+      mode                   = "access"
+      mtu                    = 1500
+      trunk_vlans            = "651"
+      members = {
+        "sys/intf/phys-[eth1/21]" = {
+          force = true
+        }
+      }
+    }
+    "po102" = {
+      port_channel_mode      = "active"
+      minimum_links          = 1
+      suspend_individual     = "disable"
+      admin_state            = "up"
+      description            = "### TWE SAT to PROD HRB Proxy 2 ###"
+      layer                  = "Layer2"
+      mode                   = "access"
+      mtu                    = 1500
+      trunk_vlans            = "651"
+      members = {
+        "sys/intf/phys-[eth1/22]" = {
+          force = true
+        }
+      }
+    }
+     "po103" = {
+      port_channel_mode      = "active"
+      minimum_links          = 1
+      suspend_individual     = "disable"
+      admin_state            = "up"
+      description            = "### TWE SAT to PROD HRB Outside 1 ###"
+      layer                  = "Layer2"
+      mode                   = "access"
+      mtu                    = 1500
+      trunk_vlans            = "650"
+      members = {
+        "sys/intf/phys-[eth1/25]" = {
+          force = true
+        }
+
+      }
+    }
+    "po104" = {
+      port_channel_mode      = "active"
+      minimum_links          = 1
+      suspend_individual     = "disable"
+      admin_state            = "up"
+      description            = "### TWE SAT to PROD HRB Outside 2 ###"
+      layer                  = "Layer2"
+      mode                   = "access"
+      mtu                    = 1500
+      trunk_vlans            = "650"
+      members = {
+        "sys/intf/phys-[eth1/26]" = {
+          force = true
+        }
+        
+      }
+    }
+     "po105" = {
+      port_channel_mode      = "active"
+      minimum_links          = 1
+      suspend_individual     = "disable"
+      admin_state            = "up"
+      description            = "### TWE SAT to PROD HRB Inside 1 ###"
+      layer                  = "Layer2"
+      mode                   = "access"
+      mtu                    = 1500
+      trunk_vlans            = "651"
+      members = {
+        "sys/intf/phys-[eth1/29]" = {
+          force = true
+        }
+
+      }
+    }
+    "po106" = {
+      port_channel_mode      = "active"
+      minimum_links          = 1
+      suspend_individual     = "disable"
+      admin_state            = "up"
+      description            = "### TWE SAT to PROD HRB Inside 2 ###"
+      layer                  = "Layer2"
+      mode                   = "access"
+      mtu                    = 1500
+      trunk_vlans            = "651"
+      members = {
+        "sys/intf/phys-[eth1/30]" = {
+          force = true
+        }
+
+      }
+    }
+  }
+}
 
 resource "nxos_port_channel_interface" "po-sat01" {
   provider = nxos.twe-sat01
@@ -326,3 +470,85 @@ resource "nxos_loopback_interface" "lo101" {
 
 
 ##### End of Loopback Interfaces #####
+
+##### Sub Interfaces #####
+
+resource "nxos_subinterface" "subint-sag01" {
+    provider = nxos.twe-sat01
+    subinterfaces = {
+    "po2.3010" = {
+      admin_state  = "up"
+      description  = "### XX-01 AGG to AGG iBGP ###"
+      mtu          = 9216
+      encap        = "vlan-3010"
+      vrf_dn       = "sys/inst-xx01-xx-core"
+    }
+    "po11.3010" = {
+      admin_state  = "up"
+      description  = "### XX-01 AGG to AGG iBGP ###"
+      mtu          = 9216
+      encap        = "vlan-3010"
+      vrf_dn       = "sys/inst-xx01-xx-core"
+    }
+    "po21.3010" = {
+      admin_state  = "up"
+      description  = "### XX-01 AGG to AGG iBGP ###"
+      mtu          = 9216
+      encap        = "vlan-3010"
+      vrf_dn       = "sys/inst-xx01-xx-core"
+    }
+  }
+}
+
+resource "nxos_subinterface" "subint-sag02" {
+    provider = nxos.twe-sat02
+    subinterfaces = {
+    "po2.3010" = {
+      admin_state  = "up"
+      description  = "### XX-01 AGG to AGG iBGP ###"
+      mtu          = 9216
+      encap        = "vlan-3010"
+      vrf_dn       = "sys/inst-xx01-xx-core"
+    }
+    "po12.3010" = {
+      admin_state  = "up"
+      description  = "### XX-01 AGG to AGG iBGP ###"
+      mtu          = 9216
+      encap        = "vlan-3010"
+      vrf_dn       = "sys/inst-xx01-xx-core"
+    }
+    "po22.3010" = {
+      admin_state  = "up"
+      description  = "### XX-01 AGG to AGG iBGP ###"
+      mtu          = 9216
+      encap        = "vlan-3010"
+      vrf_dn       = "sys/inst-xx01-xx-core"
+    }
+  }
+}
+
+##### End of Sub Interfaces #####
+
+##### SVI Interfaces ##### 
+
+resource "nxos_svi_interface" "example" {
+  for_each = local.device_data
+  device = each.key 
+  svi_interfaces = {
+    "vlan650" = {
+      admin_state             = "up"
+      description            = "### XX-01_XXX_PROD_XX_OUTSIDE ###"
+      mtu                     = 9216
+      vrf_dn                  = "sys/inst-xx01-xx-core"
+    }
+    "vlan651" = {
+      admin_state             = "up"
+      description            = "### XX-01_XXX_PROD_XX_INSIDE ###"
+      mtu                     = 9216
+      vrf_dn                  = "sys/inst-xx01-xx-core"
+    }
+  }
+}
+
+
+##### End of SVI Interfaces #####
